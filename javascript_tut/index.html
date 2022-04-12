@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Hello </title>
+</head>
+<body>
+    <a1 id = 'demo'> World </a1>
+    <button type="button" onclick="myFunction()">Try it!</button>
+    <script>
+        document.getElementById("demo").innerHTML = "My First JavaScript";
+        function myFunction() {
+            document.getElementById("demo").innerHTML = "Paragraph changed.";
+        }
+        document.write(5 + 9); // Only for testing as it clears all other content
+        console.log(1111);
+        alert(5 + 9); 
+    </script>
+    <button onclick="window.print()">Print this page</button>
+</body>
+</html>
