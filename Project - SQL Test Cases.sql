@@ -1,14 +1,14 @@
 INSERT INTO student VALUES ("2020A7PS0001P","AISHWARYA SAM","F","f20200001@pilani.bits-pilani.ac.in", NULL);
 INSERT INTO student VALUES ("2020A7PS0084P","TANVEER SINGH","M","f20200084@pilani.bits-pilani.ac.in", NULL);
 INSERT INTO student VALUES ("2020A7PS0981P","UTKARSH","M","f20200981@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0133P","MRIDUL CHANDAK","F","f20200133@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0980P","MITHIL SHAH","F","f20200980@pilani.bits-pilani.ac.in", NULL);
+INSERT INTO student VALUES ("2020A7PS0133P","MRIDUL CHANDAK","M","f20200133@pilani.bits-pilani.ac.in", NULL);
+INSERT INTO student VALUES ("2020A7PS0980P","MITHIL SHAH","M","f20200980@pilani.bits-pilani.ac.in", NULL);
 INSERT INTO student VALUES ("2020A7PS0983P","CHIRAG MAHESHWARI","M","f20200983@pilani.bits-pilani.ac.in", NULL);
 INSERT INTO student VALUES ("2020A7PS0075P","SHREYAS KETKAR","M","f20200075@pilani.bits-pilani.ac.in", NULL);
 
-INSERT INTO hostel VALUES("BD", "Budh Bhawan", 60, 80);
-INSERT INTO hostel VALUES("SK", "Shankar Bhawan", 70, 110);
-INSERT INTO hostel VALUES("MR", "Meera Bhawan", 40, 70);
+INSERT INTO hostel VALUES("BD", "Budh Bhawan", "M", 60, 80);
+INSERT INTO hostel VALUES("SK", "Shankar Bhawan", "M", 70, 110);
+INSERT INTO hostel VALUES("MR", "Meera Bhawan", "F", 40, 70);
 
 INSERT INTO room VALUES ("BD",2001,2);
 INSERT INTO room VALUES ("BD",2002,2);
@@ -33,5 +33,16 @@ INSERT INTO room VALUES ("MR",202,2);
 INSERT INTO room VALUES ("MR",101,1);
 INSERT INTO room VALUES ("MR",102,1);
 
+CALL update_phone_number("2020A7PS0084P", "8477002934");
+
 CALL create_new_wing("2020A7PS0084P");
-CALL add_wing_member("2020A7PS0084P", "2020A7PS0001P");
+CALL add_wing_member("2020A7PS0084P", "2020A7PS0075P");
+CALL allot_room("2020A7PS0084P", "SK", 3001);
+CALL allot_room("2020A7PS0075P", "SK", 3002);
+CALL swap_rooms("2020A7PS0084P", "2020A7PS0075P");
+select * from lives_in;
+
+CALL check_if_room_empty("SK", 3001, @res);
+SELECT @res;
+CALL check_if_room_empty("SK", 4001, @res);
+SELECT @res;
