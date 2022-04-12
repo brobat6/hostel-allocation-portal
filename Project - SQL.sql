@@ -1,4 +1,4 @@
-DROP DATABASE campus;
+DROP DATABASE IF EXISTS campus;
 
 CREATE DATABASE campus;
 USE campus;
@@ -9,6 +9,7 @@ CREATE TABLE student (
     gender				CHAR(1)			NOT NULL		CHECK (gender IN ("M", "F")),
     email_ID 			VARCHAR(40)		UNIQUE, 
     phone_no 			CHAR(10)		UNIQUE
+    -- Adding a PASSWORD is pretty important.
 );
 CREATE TABLE hostel (
 	hostel_id			CHAR(2)			PRIMARY KEY,
@@ -17,11 +18,12 @@ CREATE TABLE hostel (
     double_rooms		INT UNSIGNED	DEFAULT '0' NOT NULL
     -- Remember to create a procedure for derived attribute capacity.
 );
-
 CREATE TABLE wing (
 	leader_id			CHAR(13)		PRIMARY KEY		REFERENCES student,
-    size				INT UNSIGNED	DEFAULT '0' NOT NULL,
-    room_type			CHAR(1)			DEFAULT 'S' NOT NULL
+    size				INT UNSIGNED	NOT NULL,
+    room_type			CHAR(1)			NOT NULL
+    -- Add Wing LOCKED/UNLOCKED functionality later, it won't be too hard.
+    -- Add a procedure to change the wing type.
 );
 CREATE TABLE wing_hostel (
 	leader_id			CHAR(13) 		UNIQUE		REFERENCES wing,
@@ -44,8 +46,12 @@ CREATE TABLE lives_in (
 );
 CREATE TABLE member_of (
 	student_id			CHAR(13) 		PRIMARY KEY		REFERENCES student,
-    leader_id			CHAR(13)						REFERENCES wing
+    leader_id			CHAR(13)		UNIQUE			REFERENCES wing
+    -- CHECK (leader_id NOT IN (SELECT student_id FROM member_of)),
+    -- CHECK (student_id NOT IN (SELECT leader_id FROM member_of))
+    -- a leader should not be a member, and vice versa!
 );
+
 
 INSERT INTO student VALUES ("2020A7PS0001P","AISHWARYA SAM","M","f20200001@pilani.bits-pilani.ac.in", NULL);
 INSERT INTO student VALUES ("2020A7PS0002P","YUGAL JOSHI","M","f20200002@pilani.bits-pilani.ac.in", NULL);
@@ -982,3 +988,4 @@ INSERT INTO room VALUES ("MR",167,1);
 INSERT INTO room VALUES ("MR",168,1);
 INSERT INTO room VALUES ("MR",169,1);
 INSERT INTO room VALUES ("MR",170,1);
+
