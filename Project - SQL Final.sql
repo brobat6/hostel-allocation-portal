@@ -87,6 +87,33 @@ BEGIN
 END$$
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS join_wing;
+DELIMITER $$
+CREATE PROCEDURE join_wing(IN q_code VARCHAR(50), IN q_member CHAR(13))
+	COMMENT "Join a wing using unique wing code, assuming the student is not part of any other wing."
+BEGIN
+	IF(q_member NOT IN (SELECT student_id FROM student)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student records not found!';
+	ELSEIF(q_member IN (SELECT student_id FROM member_of) OR q_member IN (SELECT leader_id FROM wing)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student is already in a wing!';
+	ELSEIF(q_code NOT IN (SELECT wing_code FROM wing)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Wing does not exist!';
+	ELSEIF((SELECT gender FROM student WHERE student_id = (SELECT leader_id FROM wing WHERE wing_code = q_code)) != (SELECT gender FROM student WHERE student_id = q_member)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You cannot join wing of opposite gender!';
+	ELSE
+		SET @temp = (SELECT size FROM wing WHERE wing_code = q_code);
+        SET @temp = @temp + 1;
+        SET @wing_type = (SELECT room_type FROM wing WHERE wing_code = q_code);
+        IF((@wing_type = "D" AND @temp > 12) OR (@wing_type = "S" AND @temp > 6)) THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Maximum wing size reached!';
+        ELSE 
+			INSERT INTO member_of VALUES (q_member, (SELECT leader_id FROM wing WHERE wing_code = q_code));
+			UPDATE wing SET size = @temp WHERE wing_code = q_code;
+		END IF;
+	END IF;
+END$$
+DELIMITER ;
+
 DROP PROCEDURE IF EXISTS add_preferred_hostel;
 DELIMITER $$
 CREATE PROCEDURE add_preferred_hostel(IN q_id CHAR(13), IN q_hostel CHAR(2))
@@ -106,6 +133,8 @@ BEGIN
 END$$
 DELIMITER ;
 
+
+    
 DROP PROCEDURE IF EXISTS add_wing_member;
 DELIMITER $$
 CREATE PROCEDURE add_wing_member(IN q_leader CHAR(13), IN q_member CHAR(13))
