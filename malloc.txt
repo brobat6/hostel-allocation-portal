@@ -1,0 +1,34 @@
+TWO ALGORITHMS - FOR SINGLE WING AND FOR DOUBLE WING.		
+
+wingList[] = SELECT leader_id FROM wing_hostel;
+hostelList[] = SELECT preferred_hostel FROM wing_hostel;
+n = size of wingList or size of hostelList
+
+for(int i = 0; i < n; i++) {
+	if(SELECT EXISTS(SELECT student_id FROM lives_in WHERE student_id = wingList[i])) {
+		continue;
+		// this means that wing has been allocated rooms already!
+	}
+	roomList[] = SELECT room_no FROM room WHERE hostel_id = hostelList[i] AND capacity = 1;
+	m = size of roomList
+	sz = SELECT size FROM wing WHERE leader_id = q_id;
+	memberList = SELECT student_id FROM member_of WHERE leader_id = wingList[i];
+	memberList += (wingList[i])
+	for(int j = 0; j < m - sz; j++) {
+		boolean possible = true;
+		for(int k = 0; k < sz; k++) {
+			if(SELECT EXISTS(SELECT room_no FROM lives_in WHERE hostel_id = hostelList[i] AND room_no = (roomList[j] + k))) {
+				// this line is only reached if room_no has an entry in lives_in.
+				possible = false;
+				break;
+			}
+		}
+		if(possible) {
+			// Allocate rooms!
+			for(int k = 0; k < sz; k++) {
+				INSERT INTO lives_in VALUES(memberList[k], hostelList[i], roomList[j] + k);
+			}
+			break;
+		}
+	}
+}
