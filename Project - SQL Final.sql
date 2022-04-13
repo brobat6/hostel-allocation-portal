@@ -120,13 +120,40 @@ BEGIN
 	IF(q_id NOT IN (SELECT leader_id FROM wing)) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Only wing leaders can add preferred hostels!';
 	ELSEIF(q_hostel NOT IN (SELECT hostel_id FROM hostel)) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Hostel does not exist! Please enter from (SK/BD/MR)';
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Hostel does not exist!';
 	ELSEIF((SELECT COUNT(preferred_hostel) FROM wing_hostel WHERE leader_id = q_id AND preferred_hostel = q_hostel) > 0) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Hostel has already been added!';
     ELSEIF((SELECT gender FROM student WHERE student_id = q_id) != (SELECT hostel_type FROM hostel WHERE hostel_id = q_hostel)) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Please enter only valid hostels of the same gender!';
 	ELSE
 		INSERT INTO wing_hostel VALUES (q_id, q_hostel);
+	END IF;
+END$$
+DELIMITER ;
+
+
+    
+DROP PROCEDURE IF EXISTS add_wing_member;
+DELIMITER $$
+CREATE PROCEDURE add_wing_member(IN q_leader CHAR(13), IN q_member CHAR(13))
+	COMMENT "Add a member to a wing, provided the student is not a member or leader of any other wing" 
+BEGIN
+	IF(q_leader NOT IN (SELECT leader_id FROM wing)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Wing does not exist!';
+	ELSEIF(q_member IN (SELECT student_id FROM member_of) OR q_member IN (SELECT leader_id FROM wing)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student is already in a wing!';
+	ELSEIF((SELECT gender FROM student WHERE student_id = q_leader) != (SELECT gender FROM student WHERE student_id = q_member)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add members of different gender!';
+	ELSE 
+        SET @temp = (SELECT size FROM wing WHERE leader_id = q_leader);
+        SET @temp = @temp + 1;
+        SET @wing_type = (SELECT room_type FROM wing WHERE leader_id = q_leader);
+        IF((@wing_type = "D" AND @temp > 8) OR (@wing_type = "S" AND @temp > 4)) THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Maximum wing size reached!';
+        ELSE 
+			INSERT INTO member_of VALUES (q_member, q_leader);
+			UPDATE wing SET size = @temp WHERE leader_id = q_leader;
+		END IF;
 	END IF;
 END$$
 DELIMITER ;
@@ -251,3 +278,14 @@ CALL allot_room("2020A7PS0084P", "SK", 3002);
 CALL swap_rooms("2020A7PS0084P", "2020A7PS0981P");
 CALL check_if_room_empty("MR", 201, @res);
 */
+CALL create_new_wing("2020A7PS0084P", "S", "sample-wing-001");
+CALL add_preferred_hostel("2020A7PS0084P", "SK");
+-- CALL add_wing_member("2020A7PS0084P", "2020A7PS0981P"); 
+CALL join_wing("sample-wing-001", "a");
+CALL create_new_wing("2020A7PS0075P", "D", "x");
+CALL add_preferred_hostel("2020A7PS0075P", "BD");
+CALL join_wing("x", "2020A7PS0983P");
+CALL join_wing("x", "2020A7PS0133P");
+CALL join_wing("x", "2020A7PS0980P");
+select * from lives_in;
+select * from wing;
