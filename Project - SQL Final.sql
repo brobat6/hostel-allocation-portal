@@ -3,8 +3,6 @@ DROP DATABASE IF EXISTS campus;
 CREATE DATABASE campus;
 USE campus;
 
--- Lets make a more general database in which there can be multiple boys or girls type hostels.
-
 CREATE TABLE student (
 	student_ID 			CHAR(13) 		PRIMARY KEY,
     student_name 		VARCHAR(50) 	NOT NULL,
@@ -19,7 +17,6 @@ CREATE TABLE hostel (
     hostel_type			CHAR(1)			NOT NULL		CHECK (hostel_type IN ("M", "F")),
     single_rooms		INT UNSIGNED	DEFAULT '0' NOT NULL,
     double_rooms		INT UNSIGNED	DEFAULT '0' NOT NULL
-    -- Remember to create a procedure for derived attribute capacity.
 );
 CREATE TABLE wing (
 	leader_id			CHAR(13)		PRIMARY KEY		REFERENCES student,
@@ -36,22 +33,17 @@ CREATE TABLE room (
 	hostel_id			CHAR(2)						REFERENCES hostel,
     room_no				INT UNSIGNED,
     capacity			INT UNSIGNED	NOT NULL	CHECK(capacity IN (1, 2)),
-	-- Constraint on capacity - 1 or 2
     PRIMARY KEY(hostel_id, room_no)
 );
 CREATE TABLE lives_in (
 	student_id			CHAR(13) 		PRIMARY KEY		REFERENCES student,
     hostel_id			CHAR(2),
     room_no				INT UNSIGNED,
-    -- Foreign key constraint on hostel_id and room_no
     FOREIGN KEY(hostel_id, room_no) REFERENCES room(hostel_id, room_no)
 );
 CREATE TABLE member_of (
 	student_id			CHAR(13) 		PRIMARY KEY		REFERENCES student,
     leader_id			CHAR(13)		REFERENCES wing
-    -- CHECK (leader_id NOT IN (SELECT student_id FROM member_of)),
-    -- CHECK (student_id NOT IN (SELECT leader_id FROM member_of))
-    -- a leader should not be a member, and vice versa!
 );
 
 DROP PROCEDURE IF EXISTS update_phone_number;
@@ -92,7 +84,6 @@ DELIMITER $$
 CREATE PROCEDURE add_preferred_hostel(IN q_id CHAR(13), IN q_hostel CHAR(2))
 	COMMENT "Adds a preferred hostel to wing only if the query is called by wing leader, and the hostel is of the same type (boys/girls)"
 BEGIN
-	-- add additional if statement to do nothing for already existing entry!!!
 	IF(q_id NOT IN (SELECT leader_id FROM wing)) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Only wing leaders can add preferred hostels!';
 	ELSEIF(q_hostel NOT IN (SELECT hostel_id FROM hostel)) THEN
@@ -147,17 +138,6 @@ BEGIN
 END$$
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS master_allocator;
-DELIMITER $$
-CREATE PROCEDURE master_allocator()
-    COMMENT "The procedure to call for hostel allocation. It will first try to allot sequential rooms 
-    in preferred hostels for all wings. After that, it will try to allocate sequential rooms in random hostels 
-	for all remaining wings. In the end, all students that are not in wings will be alloted random rooms." 
-BEGIN
-    
-END$$
-DELIMITER ;
-
 DROP PROCEDURE IF EXISTS allot_room;
 DELIMITER $$
 CREATE PROCEDURE allot_room(IN q_id CHAR(13), IN q_hostel CHAR(2), IN q_room INT UNSIGNED)
@@ -179,7 +159,7 @@ BEGIN
 END$$
 DELIMITER ;
 
--- A procedure to SWAP two allocated rooms between members of the same wing.
+
 DROP PROCEDURE IF EXISTS swap_rooms;
 DELIMITER $$
 CREATE PROCEDURE swap_rooms(IN s1 CHAR(13), IN s2 CHAR(13))
@@ -209,18 +189,6 @@ BEGIN
 	ELSE
 		SELECT 0 INTO result;
 	END IF;
-END$$
-DELIMITER ;
-
--- Wing assumptions -> Single Room wing size is 4. Double room wing size is 6.
--- Check if room empty --> Hard code using 4 vairables
--- But, how to ALLOT rooms? How to get students that belong to the wing, in different variables??
-DROP PROCEDURE IF EXISTS allot_wing_rooms;
-DELIMITER $$
-CREATE PROCEDURE allot_wing_rooms(IN q_leader CHAR(13), IN q_hostel CHAR(2), IN q_room INT UNSIGNED)
-	COMMENT "Allot the wing a sequence of rooms in the given hostel."
-BEGIN
-	
 END$$
 DELIMITER ;
 
@@ -259,18 +227,17 @@ INSERT INTO room VALUES ("MR",202,2);
 INSERT INTO room VALUES ("MR",101,1);
 INSERT INTO room VALUES ("MR",102,1);
 
+
+-- Queries for each procedure
 /*
 CALL update_phone_number("2020A7PS0084P", "8477002934");
-
-CALL create_new_wing("2020A7PS0084P");
-CALL add_wing_member("2020A7PS0084P", "2020A7PS0075P");
-CALL allot_room("2020A7PS0084P", "SK", 3001);
-CALL allot_room("2020A7PS0075P", "SK", 3002);
-CALL swap_rooms("2020A7PS0084P", "2020A7PS0075P");
-select * from lives_in;
-
-CALL check_if_room_empty("SK", 3001, @res);
-SELECT @res;
-CALL check_if_room_empty("SK", 4001, @res);
-SELECT @res;
+CALL update_email_id("2020A7PS0084P", "ldrubra8@gmail.com");
+CALL create_new_wing("2020A7PS0084P", "sample-wing-001");
+CALL add_preferred_hostel("2020A7PS0084P", "SK");
+CALL add_wing_member("2020A7PS0084P", "2020A7PS0981P");
+CALL change_wing_type("2020A7PS0084P", "S");
+CALL allot_room("2020A7PS0981P", "SK", 3001);
+CALL allot_room("2020A7PS0084P", "SK", 3002);
+CALL swap_rooms("2020A7PS0084P", "2020A7PS0981P");
+CALL check_if_room_empty("MR", 201, @res);
 */
