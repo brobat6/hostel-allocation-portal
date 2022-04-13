@@ -32,7 +32,6 @@ public class Main {
 	static JPanel adminMainMenuPanel = new JPanel();
 	static JButton executeAllocation = new JButton("Execute Allocation");
 	static Boolean wasAdminMainMenuDisplayedBefore = false;
-	//View all student tables
 	
 	static JPanel studentBeforeExecMainMenuPanel = new JPanel();
 	static JButton createWing = new JButton("Create Wing");
@@ -48,26 +47,19 @@ public class Main {
 	static JTextField fillWingCode = new JTextField();
 	static JTextField fillRoomType = new JTextField();
 	static JButton createWingButton = new JButton("Create New Wing");
-//	static Boolean wasStudentBeforeExecDisplayedBefore = false;
+	static Boolean wasCreateWingMenuDisplayedBefore = false;
 	
 	static JPanel viewWingPanel = new JPanel();
-//	static JLabel wingCode = new JLabel("Set Wing Code");
-//	static JLabel roomType = new JLabel("Select Room Type (S or D)");
-//	static JTextField fillWingCode = new JTextField();
-//	static JTextField fillRoomType = new JTextField();
-//	static JButton createWingButton = new JButton("Create New Wing");
+	static JLabel wingCodeValue = new JLabel();
+	static JLabel preferredHostel = new JLabel("Type your Preferred Hostel ID");
+	static JTextField fillPreferredHostel = new JTextField();
+	static JButton submitPreference = new JButton("Submit Preference");
+	static Boolean wasViewWingMenuDisplayedBefore = false;
 	
 	static JPanel studentAfterExecMainMenuPanel = new JPanel();
+	static JLabel displayID = new JLabel();
+	static JLabel displayRoomNo = new JLabel();
 	static Boolean wasStudentAfterExecDisplayedBefore = false;
-//	static JButton executeAllocation = new JButton("Execute Allocation");
-	
-	static JPanel highScoresPanel = new JPanel();
-	static String[] highScoresColumns = {"Rank", "UserName", "Score"}; 
-	static String[][] highScoresTableData0 = {{"1.", "-", "0"}, {"2.", "-", "0"}, {"3.", "-", "0"}, {"4.", "-", "0"}, {"5.", "-", "0"}};
-	static String[][] highScoresTableData1 = {{"1.", "-", "0"}, {"2.", "-", "0"}, {"3.", "-", "0"}, {"4.", "-", "0"}, {"5.", "-", "0"}};
-	static String[][] highScoresTableData2 = {{"1.", "-", "0"}, {"2.", "-", "0"}, {"3.", "-", "0"}, {"4.", "-", "0"}, {"5.", "-", "0"}};
-	static JButton backHighScores = new JButton("Back");
-	static Boolean wasHighScoresPageDisplayedBefore = false;
 	
 	static void modifyComponent(JComponent component, int buttonSize) {
 		component.setForeground(Color.BLACK);
@@ -76,6 +68,11 @@ public class Main {
 	}
 	
 	static void mainPage() {
+		jf.getContentPane().invalidate();
+		jf.getContentPane().validate();
+		jf.getContentPane().repaint();
+		
+		wasMainPageDisplayedBefore = true;
 		
 		mainPagePanel.setLayout(null);
 		mainPagePanel.setBackground(Color.WHITE);
@@ -99,7 +96,6 @@ public class Main {
 		logInMain.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				wasMainPageDisplayedBefore = true;
 				if (wasLoginPageDisplayedBefore) {
 					jf.add(loginPagePanel);
 				}
@@ -123,6 +119,11 @@ public class Main {
 	}
 	
 	static void loginPage() {
+		jf.getContentPane().invalidate();
+		jf.getContentPane().validate();
+		jf.getContentPane().repaint();
+		
+		wasLoginPageDisplayedBefore = true;
 		
 		loginPagePanel.setLayout(null);
 		loginPagePanel.setBackground(Color.WHITE);
@@ -158,7 +159,6 @@ public class Main {
 		logIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				wasLoginPageDisplayedBefore = true;
 				if (fillUserNameLogin.getText().equals("")) {
 					JOptionPane.showMessageDialog(jf, "UserName Field is empty!");
 				}
@@ -173,8 +173,7 @@ public class Main {
 					}
 					else {
 						adminMainMenu();
-					}				
-					mainMenu();
+					}
 					jf.remove(loginPagePanel);
 				}
 				else {
@@ -188,13 +187,22 @@ public class Main {
 						else {
 							DataBase.idNumber = fillUserNameLogin.getText();
 							DataBase.adminAccess = false;
-//							if (wasMainMenuPageDisplayedBefore) {
-//								jf.add(mainMenuPanel);
-//							}
-//							else {
-//								mainMenu();
-//							}
-							mainMenu();
+							if (DataBase.allocationDone) {
+								if (wasStudentAfterExecDisplayedBefore) {
+									jf.add(studentAfterExecMainMenuPanel);
+								}
+								else {
+									studentAfterExecMainMenu();
+								}
+							}
+							else {
+								if (wasStudentBeforeExecDisplayedBefore) {
+									jf.add(studentBeforeExecMainMenuPanel);
+								}
+								else {
+									studentBeforeExecMainMenu();
+								}
+							}
 							jf.remove(loginPagePanel);
 						}
 					}
@@ -213,7 +221,6 @@ public class Main {
 		backLogin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				wasLoginPageDisplayedBefore = true;
 				if (wasMainPageDisplayedBefore) {
 					jf.add(mainPagePanel);
 				}
@@ -221,41 +228,48 @@ public class Main {
 					mainPage();
 				}
 				jf.remove(loginPagePanel);
-				jf.revalidate();
 			}
 		});
 	}
 	
-	static void mainMenu() {
-		
-		if (DataBase.adminAccess) {
-			adminMainMenu();
-		}
-		else {
-			if (DataBase.allocationDone) {
-//				studentAfterExecMainMenu();
-			}
-			else {
-				studentBeforeExecMainMenu();
-			}
-		}
-	}
-	
 	static void adminMainMenu() {
+		jf.getContentPane().invalidate();
+		jf.getContentPane().validate();
+		jf.getContentPane().repaint();
 		
-		adminMainMenuPanel.removeAll();
+		wasAdminMainMenuDisplayedBefore = true;
+		
 		adminMainMenuPanel.setLayout(null);
 		adminMainMenuPanel.setBackground(Color.WHITE);
 		jf.add(adminMainMenuPanel);
 		
+		JLabel imgLabel = new JLabel(new ImageIcon("src/resources/logo.gif"));
+		adminMainMenuPanel.add(imgLabel);
+		imgLabel.setVisible(true);
+		imgLabel.setBounds(0, 0, 675, 200);
+		
 		modifyComponent(executeAllocation, 25);
-		executeAllocation.setBounds(200, 320, 220, 64);
+		executeAllocation.setBounds(160, 320, 300, 64);
 		executeAllocation.setFocusable(false);
 		adminMainMenuPanel.add(executeAllocation);
 		executeAllocation.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//executeAllocationDatabase()
+				 try {
+					DataBase.allocationofSingleRooms();
+				}  catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			       try {
+					DataBase.allocationOfDoubleRooms();
+				}  catch (Exception e2) {
+					e2.printStackTrace();
+				}
+			       try {
+					DataBase.allocateRemainingRooms();
+				}  catch (Exception e3) {
+					e3.printStackTrace();
+				}
 				if (DataBase.allocationDone) {
 					JOptionPane.showMessageDialog(jf, "Hostel Allocation Already Complete!");
 				}
@@ -273,9 +287,13 @@ public class Main {
 		logOut.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				wasMainMenuPageDisplayedBefore = true;
 				DataBase.idNumber = "";
-				mainPage();
+				if (wasMainPageDisplayedBefore) {
+					jf.add(mainPagePanel);
+				}
+				else {
+					mainPage();
+				}
 				jf.remove(adminMainMenuPanel);
 			}
 		});
@@ -293,6 +311,11 @@ public class Main {
 	}
 	
 	static void studentBeforeExecMainMenu() {
+		jf.getContentPane().invalidate();
+		jf.getContentPane().validate();
+		jf.getContentPane().repaint();
+		
+		wasStudentBeforeExecDisplayedBefore = true;
 		
 		studentBeforeExecMainMenuPanel.setLayout(null);
 		studentBeforeExecMainMenuPanel.setBackground(Color.WHITE);
@@ -305,16 +328,13 @@ public class Main {
 		createWing.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				wasLoginPageDisplayedBefore = true;
-//				if (wasMainPageDisplayedBefore) {
-//					jf.add(mainPagePanel);
-//				}
-//				else {
-//					mainPage();
-//				}
-				createWingMenu();
+				if (wasCreateWingMenuDisplayedBefore) {
+					jf.add(createWingPanel);
+				}
+				else {
+					createWingMenu();
+				}
 				jf.remove(studentBeforeExecMainMenuPanel);
-				jf.revalidate();
 			}
 		});
 		
@@ -343,7 +363,13 @@ public class Main {
 		viewWing.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				if (wasViewWingMenuDisplayedBefore) {
+					jf.add(viewWingPanel);
+				}
+				else {
+					viewWingMenu();
+				}
+				jf.remove(studentBeforeExecMainMenuPanel);
 			}
 		});
 		
@@ -354,9 +380,13 @@ public class Main {
 		logOut.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				wasMainMenuPageDisplayedBefore = true;
-//				DataBase.userNamePlayer = "";
-				mainPage();
+				DataBase.idNumber = "";
+				if (wasMainPageDisplayedBefore) {
+					jf.add(mainPagePanel);
+				}
+				else {
+					mainPage();
+				}
 				jf.remove(studentBeforeExecMainMenuPanel);
 			}
 		});
@@ -374,10 +404,20 @@ public class Main {
 	}
 	
 	static void createWingMenu() {
+		jf.getContentPane().invalidate();
+		jf.getContentPane().validate();
+		jf.getContentPane().repaint();
+		
+		wasCreateWingMenuDisplayedBefore = true;
 		
 		createWingPanel.setLayout(null);
 		createWingPanel.setBackground(Color.WHITE);
 		jf.add(createWingPanel);
+		
+		JLabel imgLabel = new JLabel(new ImageIcon("src/resources/logo.gif"));
+		createWingPanel.add(imgLabel);
+		imgLabel.setVisible(true);
+		imgLabel.setBounds(0, 0, 675, 200);
 		
 		modifyComponent(wingCode, 22);
 		wingCode.setBounds(50, 220, 300, 64);
@@ -404,7 +444,6 @@ public class Main {
 		createWingButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				wasLoginPageDisplayedBefore = true;
 				if (fillWingCode.getText().equals("")) {
 					JOptionPane.showMessageDialog(jf, "Wing Code field is empty!");
 				}
@@ -430,107 +469,167 @@ public class Main {
 		backButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				wasLoginPageDisplayedBefore = true;
-//				if (wasMainPageDisplayedBefore) {
-//					jf.add(mainPagePanel);
-//				}
-//				else {
-//					mainPage();
-//				}
-				studentBeforeExecMainMenu();
+				if (wasStudentBeforeExecDisplayedBefore) {
+					jf.add(studentBeforeExecMainMenuPanel);
+				}
+				else {
+					studentBeforeExecMainMenu();
+				}
 				jf.remove(createWingPanel);
-				jf.revalidate();
 			}
 		});
 	}
 	
-static void viewWingMenu() {
+	static void viewWingMenu() {
+		
+		jf.getContentPane().invalidate();
+		jf.getContentPane().validate();
+		jf.getContentPane().repaint();
+		
+		wasViewWingMenuDisplayedBefore = true;
 		
 		viewWingPanel.setLayout(null);
 		viewWingPanel.setBackground(Color.WHITE);
 		jf.add(viewWingPanel);
 		
+		try {
+			wingCodeValue.setText("Wing Code - " + DataBase.findWingCode());
+		}
+		catch (Exception eViewWing2) {
+			System.out.println("BRUH");
+		}
+		wingCodeValue.setForeground(Color.BLACK);
+		wingCodeValue.setFont(new Font("STXihei", Font.BOLD, 20));
+		wingCodeValue.setBackground(Color.BLACK);
+		wingCodeValue.setBounds(150, 0, 300, 152);
+		viewWingPanel.add(wingCodeValue);	
 		
-			
+		try {
+			ResultSet rs;
+			String[] columns = new String[2];
+			columns[0] = "Student ID";
+			columns[1] = "Student Name";
+			String[][] members = new String[8][2];
+			members[0][0] = DataBase.findWingLeader();
+			members[0][1] = DataBase.findName(members[0][0]);
+			rs = DataBase.viewWing();
+			int pos = 1;
+			while (rs.next()) {
+				members[pos][0] = rs.getString(1);
+				members[pos][1] = rs.getString(2);
+				pos++;
+			}
+			JTable membersOfWing = new JTable(members, columns);
+			membersOfWing.setEnabled(false);
+		    JScrollPane sp=new JScrollPane(membersOfWing);
+		    sp.setBounds(150, 100, 300, 152);
+			viewWingPanel.add(sp);
+		}
+		catch (Exception eViewWing) {
+			System.out.println(eViewWing);
+		}
+		
+		modifyComponent(preferredHostel, 22);
+		preferredHostel.setBounds(20, 300, 290, 64);
+		viewWingPanel.add(preferredHostel);
+		
+		fillPreferredHostel.setForeground(Color.BLACK);
+		fillPreferredHostel.setFont(new Font("Microsoft Tai Le", Font.PLAIN, 22));
+		fillPreferredHostel.setBounds(320, 300, 220, 64);
+		viewWingPanel.add(fillPreferredHostel);
+		
+		modifyComponent(submitPreference, 20);
+		submitPreference.setBounds(90, 430, 220, 64);
+		submitPreference.setFocusable(false);
+		viewWingPanel.add(submitPreference);
+		submitPreference.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					DataBase.addPreferences(fillPreferredHostel.getText());
+					JOptionPane.showMessageDialog(jf, "Preference submitted successfully!");
+				}
+				catch (Exception eViewWingMenu3) {
+					JOptionPane.showMessageDialog(jf, eViewWingMenu3.getMessage());
+				}
+			}
+		});
+		
 		modifyComponent(backButton, 20);
 		backButton.setBounds(320, 430, 220, 64);
 		backButton.setFocusable(false);
-		createWingPanel.add(backButton);
+		viewWingPanel.add(backButton);
 		backButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				wasLoginPageDisplayedBefore = true;
-//				if (wasMainPageDisplayedBefore) {
-//					jf.add(mainPagePanel);
-//				}
-//				else {
-//					mainPage();
-//				}
-				studentBeforeExecMainMenu();
-				jf.remove(createWingPanel);
-				jf.revalidate();
+				if (wasStudentBeforeExecDisplayedBefore) {
+					jf.add(studentBeforeExecMainMenuPanel);
+				}
+				else {
+					studentBeforeExecMainMenu();
+				}
+				jf.remove(viewWingPanel);
 			}
 		});
 	}
 	
-//	static void highScores() throws Exception {
-//		
-//		highScoresPanel.setLayout(null);
-//		highScoresPanel.setBackground(Color.BLACK);
-//		jf.add(highScoresPanel);
-//		
-//		JLabel imgLabel = new JLabel(new ImageIcon("src/resources/snakeLogo.png"));
-//		highScoresPanel.add(imgLabel);
-//		imgLabel.setVisible(true);
-//		imgLabel.setBounds(0, 0, 600, 200);
-//		
-//		DataBase.loadHighScores();
-//		
-//		JTable highScoresTable0 = new JTable(highScoresTableData0, highScoresColumns);
-//		JTable highScoresTable1 = new JTable(highScoresTableData1, highScoresColumns);
-//		JTable highScoresTable2 = new JTable(highScoresTableData2, highScoresColumns);
-//
-//		highScoresTable0.setFillsViewportHeight(true);
-//		highScoresTable0.setBounds(110, 200, 400, 200);
-//		
-//		highScoresTable1.setFillsViewportHeight(true);
-//		highScoresTable1.setBounds(110, 200, 400, 200);
-//		
-//		highScoresTable2.setFillsViewportHeight(true);
-//		highScoresTable2.setBounds(110, 200, 400, 200);
-//		
-//		JTabbedPane tp=new JTabbedPane();  
-//	    tp.setBounds(160,210,300,108);
-//	    tp.add("Easy",highScoresTable0);  
-//	    tp.add("Medium",highScoresTable1);  
-//	    tp.add("Hard",highScoresTable2);    
-//
-//		highScoresPanel.add(tp);
-//		
-//		modifyComponent(backHighScores, 25);
-//		backHighScores.setBounds(200, 410, 220, 64);
-//		backHighScores.setFocusable(false);
-//		highScoresPanel.add(backHighScores);
-//		backHighScores.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				wasHighScoresPageDisplayedBefore = true;
-//				if (wasMainMenuPageDisplayedBefore) {
-//					jf.add(mainMenuPanel);
-//				}
-//				else {
-//					mainMenu();
-//				}
-//				jf.remove(highScoresPanel);
-//			}
-//		});
-//		//ADD Snake Game at TOP
-//		//ADD our names at bottom
-//	}
+	static void studentAfterExecMainMenu() {
+		
+		jf.getContentPane().invalidate();
+		jf.getContentPane().validate();
+		jf.getContentPane().repaint();
+		
+		wasStudentAfterExecDisplayedBefore = true;
+		
+		studentAfterExecMainMenuPanel.setLayout(null);
+		studentAfterExecMainMenuPanel.setBackground(Color.WHITE);
+		jf.add(studentAfterExecMainMenuPanel);
+		
+		JLabel imgLabel = new JLabel(new ImageIcon("src/resources/logo.gif"));
+		studentAfterExecMainMenuPanel.add(imgLabel);
+		imgLabel.setVisible(true);
+		imgLabel.setBounds(0, 0, 675, 200);
+		
+		try {
+			ResultSet rs = DataBase.viewAllocation();
+			rs.next();
+			displayID.setText("Student ID - " + rs.getString(1));
+			displayID.setForeground(Color.BLACK);
+			displayID.setFont(new Font("STXihei", Font.BOLD, 25));
+			displayID.setBackground(Color.BLACK);
+			displayID.setBounds(150, 180, 300, 152);
+			studentAfterExecMainMenuPanel.add(displayID);
+			displayRoomNo.setText("Room Number - " + rs.getString(2) + " " + rs.getString(3));
+			displayRoomNo.setForeground(Color.BLACK);
+			displayRoomNo.setFont(new Font("STXihei", Font.BOLD, 25));
+			displayRoomNo.setBackground(Color.BLACK);
+			displayRoomNo.setBounds(150, 250, 300, 152);
+			studentAfterExecMainMenuPanel.add(displayRoomNo);
+		}
+		catch (Exception eViewWing) {
+			System.out.println(eViewWing);
+		}
+		
+		modifyComponent(logOut, 25);
+		logOut.setBounds(220, 420, 220, 64);
+		logOut.setFocusable(false);
+		studentAfterExecMainMenuPanel.add(logOut);
+		logOut.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DataBase.idNumber = "";
+				if (wasMainPageDisplayedBefore) {
+					jf.add(mainPagePanel);
+				}
+				else {
+					mainPage();
+				}
+				jf.remove(studentAfterExecMainMenuPanel);
+			}
+		});
+	}
 	
 	public static void main (String args[]) throws Exception {
-//		DataBase.buildConnection();
-//		DataBase.makeQuery("SELECT * FROM dataBaseSnakeGame");
 		SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 				try {
@@ -538,6 +637,11 @@ static void viewWingMenu() {
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println(e);
+				}
+				try {
+					DataBase.allocationDoneOrNot();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				jf.setVisible(true);
 				jf.setLayout(new CardLayout());
@@ -547,14 +651,6 @@ static void viewWingMenu() {
 		        jf.setSize(620, 640);
 		        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				mainPage();
-//				System.out.println("OUT");
-//				jf.add(new JLabel());
-//		        mainPage();
-//				loginPage();
-//				createAccount();
-//				mainMenu();
-//				setDifficulty();
-//				highScores();
 			}
 		});
 	}
