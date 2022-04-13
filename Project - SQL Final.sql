@@ -10,8 +10,8 @@ CREATE TABLE student (
     student_name 		VARCHAR(50) 	NOT NULL,
     gender				CHAR(1)			NOT NULL		CHECK (gender IN ("M", "F")),
     email_ID 			VARCHAR(40)		UNIQUE, 
-    phone_no 			CHAR(10)		UNIQUE
-    -- Adding a PASSWORD is pretty important.
+    phone_no 			CHAR(10)		UNIQUE,
+    pwd					VARCHAR(40)		NOT NULL
 );
 CREATE TABLE hostel (
 	hostel_id			CHAR(2)			PRIMARY KEY,
@@ -225,13 +225,13 @@ BEGIN
 END$$
 DELIMITER ;
 
-INSERT INTO student VALUES ("2020A7PS0001P","AISHWARYA SAM","F","f20200001@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0084P","TANVEER SINGH","M","f20200084@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0981P","UTKARSH","M","f20200981@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0133P","MRIDUL CHANDAK","M","f20200133@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0980P","MITHIL SHAH","M","f20200980@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0983P","CHIRAG MAHESHWARI","M","f20200983@pilani.bits-pilani.ac.in", NULL);
-INSERT INTO student VALUES ("2020A7PS0075P","SHREYAS KETKAR","M","f20200075@pilani.bits-pilani.ac.in", NULL);
+INSERT INTO student VALUES ("2020A7PS0001P","AISHWARYA SAM","F","f20200001@pilani.bits-pilani.ac.in", NULL, "abcd");
+INSERT INTO student VALUES ("2020A7PS0084P","TANVEER SINGH","M","f20200084@pilani.bits-pilani.ac.in", NULL, "brobat");
+INSERT INTO student VALUES ("2020A7PS0981P","UTKARSH","M","f20200981@pilani.bits-pilani.ac.in", NULL, "utk");
+INSERT INTO student VALUES ("2020A7PS0133P","MRIDUL CHANDAK","M","f20200133@pilani.bits-pilani.ac.in", NULL, "abcd");
+INSERT INTO student VALUES ("2020A7PS0980P","MITHIL SHAH","M","f20200980@pilani.bits-pilani.ac.in", NULL, "abcd");
+INSERT INTO student VALUES ("2020A7PS0983P","CHIRAG MAHESHWARI","M","f20200983@pilani.bits-pilani.ac.in", NULL, "abcd");
+INSERT INTO student VALUES ("2020A7PS0075P","SHREYAS KETKAR","M","f20200075@pilani.bits-pilani.ac.in", NULL, "abcd");
 
 INSERT INTO hostel VALUES("BD", "Budh Bhawan", "M", 60, 80);
 INSERT INTO hostel VALUES("SK", "Shankar Bhawan", "M", 70, 110);
