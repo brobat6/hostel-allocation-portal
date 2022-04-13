@@ -6,16 +6,16 @@
 - BITS Pilani Logo PNG 
 - Change credentials in DataBase.java
 - 
-- query = "SELECT EXISTS("
-				+ "  SELECT student_ID "
-				+ "  FROM student"
-				+ "  WHERE student_ID = '" + idCheck + "');";
-		rset = state.executeQuery(query);
-		rset.next();
-		return rset.getBoolean(1);
-- ArrayList<String> wingList = new ArrayList<String>();
+ ```ArrayList<String> wingList = new ArrayList<String>();
 		query = "SELECT leader_id from wing_hostel;";
 		state.executeQuery(query);
 		while (rset.next()) {
 			wingList.add(rset.getString(1));
 		}
+ query = "SELECT EXISTS("
+				+ "  SELECT student_ID "
+				+ "  FROM student"
+				+ "  WHERE student_ID = '" + idCheck + "');";
+		rset = state.executeQuery(query);
+		rset.next();
+		return rset.getBoolean(1);```
