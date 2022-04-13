@@ -73,8 +73,6 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student record not found!';
 	ELSEIF(q_type NOT IN ("S", "D")) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid wing type, enter S or D only!';
-	ELSEIF(LEN(q_code) = 0) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Wing code field cannot be empty!';
 	ELSEIF(q_id IN (SELECT leader_id FROM wing)) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You are already a wing leader!';
 	ELSEIF(q_id IN (SELECT student_id FROM student)) THEN
