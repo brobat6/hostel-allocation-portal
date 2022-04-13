@@ -22,7 +22,7 @@ CREATE TABLE wing (
 	leader_id			CHAR(13)		PRIMARY KEY		REFERENCES student,
     size				INT UNSIGNED	NOT NULL,
     room_type			CHAR(1)			NOT NULL		CHECK (room_type IN ("S", "D")),
-    wing_code			VARCHAR(50)		NOT NULL
+    wing_code			VARCHAR(50)		UNIQUE NOT NULL
 );
 CREATE TABLE wing_hostel (
 	leader_id			CHAR(13) 		UNIQUE		REFERENCES wing,
@@ -69,12 +69,20 @@ DELIMITER $$
 CREATE PROCEDURE create_new_wing(IN q_id CHAR(13), IN q_type CHAR(1), IN q_code VARCHAR(50))
 	COMMENT "Creates a new wing with q_id as wing leader, assuming the student is not in any other wing."
 BEGIN
-	IF(q_id NOT IN (SELECT student_id FROM student)) THEN 
+	IF(q_id NOT IN (SELECT student_id FROM student)) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student record not found!';
-	ELSEIF(q_id NOT IN (SELECT leader_id FROM wing) AND q_id NOT IN (SELECT student_id FROM member_of)) THEN
-		INSERT INTO wing VALUES (q_id, "1", q_type, q_code);
+	ELSEIF(q_type NOT IN ("S", "D")) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid wing type, enter S or D only!';
+	ELSEIF(LEN(q_code) = 0) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Wing code field cannot be empty!';
+	ELSEIF(q_id IN (SELECT leader_id FROM wing)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You are already a wing leader!';
+	ELSEIF(q_id IN (SELECT student_id FROM student)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'You are already in a wing!';
+	ELSEIF(q_code IN (SELECT wing_code FROM wing)) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Please enter another wing code, this one already exists for another wing!';
 	ELSE
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student is already in another wing!';
+		INSERT INTO wing VALUES (q_id, 1, q_type, q_code);
 	END IF;
 END$$
 DELIMITER ;
@@ -88,6 +96,8 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Only wing leaders can add preferred hostels!';
 	ELSEIF(q_hostel NOT IN (SELECT hostel_id FROM hostel)) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Hostel does not exist!';
+	ELSEIF((SELECT COUNT(preferred_hostel) FROM wing_hostel WHERE leader_id = q_id AND preferred_hostel = q_hostel) > 0) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Hostel has already been added!';
     ELSEIF((SELECT gender FROM student WHERE student_id = q_id) != (SELECT hostel_type FROM hostel WHERE hostel_id = q_hostel)) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Please enter only valid hostels of the same gender!';
 	ELSE
