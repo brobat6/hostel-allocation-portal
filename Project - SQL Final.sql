@@ -66,13 +66,13 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS create_new_wing;
 DELIMITER $$
-CREATE PROCEDURE create_new_wing(IN q_id CHAR(13), IN q_code VARCHAR(50))
+CREATE PROCEDURE create_new_wing(IN q_id CHAR(13), IN q_type CHAR(1), IN q_code VARCHAR(50))
 	COMMENT "Creates a new wing with q_id as wing leader, assuming the student is not in any other wing."
 BEGIN
 	IF(q_id NOT IN (SELECT student_id FROM student)) THEN 
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student record not found!';
 	ELSEIF(q_id NOT IN (SELECT leader_id FROM wing) AND q_id NOT IN (SELECT student_id FROM member_of)) THEN
-		INSERT INTO wing VALUES (q_id, "1", "S", q_code);
+		INSERT INTO wing VALUES (q_id, "1", q_type, q_code);
 	ELSE
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student is already in another wing!';
 	END IF;
@@ -232,7 +232,7 @@ INSERT INTO room VALUES ("MR",102,1);
 /*
 CALL update_phone_number("2020A7PS0084P", "8477002934");
 CALL update_email_id("2020A7PS0084P", "ldrubra8@gmail.com");
-CALL create_new_wing("2020A7PS0084P", "sample-wing-001");
+CALL create_new_wing("2020A7PS0084P", "S", "sample-wing-001");
 CALL add_preferred_hostel("2020A7PS0084P", "SK");
 CALL add_wing_member("2020A7PS0084P", "2020A7PS0981P");
 CALL change_wing_type("2020A7PS0084P", "S");
