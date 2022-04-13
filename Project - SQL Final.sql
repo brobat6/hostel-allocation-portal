@@ -24,9 +24,8 @@ CREATE TABLE hostel (
 CREATE TABLE wing (
 	leader_id			CHAR(13)		PRIMARY KEY		REFERENCES student,
     size				INT UNSIGNED	NOT NULL,
-    room_type			CHAR(1)			NOT NULL		CHECK (room_type IN ("S", "D"))
-    -- Add Wing LOCKED/UNLOCKED functionality later, it won't be too hard.
-    -- Add a procedure to change the wing type.
+    room_type			CHAR(1)			NOT NULL		CHECK (room_type IN ("S", "D")),
+    wing_code			VARCHAR(50)		NOT NULL
 );
 CREATE TABLE wing_hostel (
 	leader_id			CHAR(13) 		UNIQUE		REFERENCES wing,
@@ -75,13 +74,13 @@ DELIMITER ;
 
 DROP PROCEDURE IF EXISTS create_new_wing;
 DELIMITER $$
-CREATE PROCEDURE create_new_wing(IN q_id CHAR(13))
+CREATE PROCEDURE create_new_wing(IN q_id CHAR(13), IN q_code VARCHAR(50))
 	COMMENT "Creates a new wing with q_id as wing leader, assuming the student is not in any other wing."
 BEGIN
 	IF(q_id NOT IN (SELECT student_id FROM student)) THEN 
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student record not found!';
 	ELSEIF(q_id NOT IN (SELECT leader_id FROM wing) AND q_id NOT IN (SELECT student_id FROM member_of)) THEN
-		INSERT INTO wing VALUES (q_id, "1", "S");
+		INSERT INTO wing VALUES (q_id, "1", "S", q_code);
 	ELSE
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student is already in another wing!';
 	END IF;
